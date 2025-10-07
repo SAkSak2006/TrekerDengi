@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")   // KSP для Kotlin 1.9.10
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("androidx.room")
 }
@@ -59,8 +59,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(libs.androidx.ui.text)
-    val composeBom = platform("androidx.compose:compose-bom:2024.09.03")  // Фикс: новая BOM (Material3 1.2.1)
+    val composeBom = platform("androidx.compose:compose-bom:2024.06.00")  // Фикс: новая BOM (Material3 1.2.1)
     implementation(composeBom)
     androidTestImplementation(composeBom)
     implementation("androidx.compose.ui:ui")
@@ -69,8 +68,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")  // Фикс: auto from BOM, no explicit version
-    implementation("androidx.compose.ui:ui-text")
+    implementation("androidx.compose.material3:material3")  // Фикс: auto from BOM
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
     // Room

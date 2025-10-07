@@ -22,8 +22,6 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.school.trekerdengi.viewmodel.StatsViewModel
-import kotlinx.coroutines.flow.collectLatest
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,41 +61,37 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
             }
 
             when (selectedTab) {
-                2 -> {  // Месяц — PieChart (по скрину: 100% для категории)
-                    if (pieEntries.isNotEmpty()) {
-                        AndroidView(factory = { PieChart(it).apply {
-                            val dataSet = PieDataSet(pieEntries, "Категории")
-                            dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
-                            data = PieData(dataSet)
+                2 -> {  // Месяц — PieChart (по скрину)
+                    AndroidView(
+                        factory = { PieChart(it).apply {
+                            data = PieData(PieDataSet(pieEntries, "Категории").apply {
+                                colors = ColorTemplate.MATERIAL_COLORS.toList()
+                            })
                             description.isEnabled = false
                             legend.isEnabled = true
                             setUsePercentValues(true)
                             invalidate()
-                        } }, modifier = Modifier.fillMaxWidth().height(300.dp))
-                    }
+                        } },
+                        modifier = Modifier.fillMaxWidth().height(300.dp)
+                    )
                     Text("Всего: $total руб", modifier = Modifier.padding(16.dp))
                 }
-                1 -> {  // Неделя — LineChart (по скрину: тренд по дням)
-                    if (lineEntries.isNotEmpty()) {
-                        AndroidView(factory = { LineChart(it).apply {
-                            val dataSet = LineDataSet(lineEntries, "Тренд расходов")
-                            dataSet.color = ColorTemplate.COLORFUL_COLORS[0]
-                            data = LineData(dataSet)
+                1 -> {  // Неделя — LineChart (по скрину)
+                    AndroidView(
+                        factory = { LineChart(it).apply {
+                            data = LineData(LineDataSet(lineEntries, "Тренд").apply {
+                                color = ColorTemplate.COLORFUL_COLORS[0]
+                            })
                             xAxis.position = XAxis.XAxisPosition.BOTTOM
                             description.isEnabled = false
                             invalidate()
-                        } }, modifier = Modifier.fillMaxWidth().height(300.dp))
-                    }
+                        } },
+                        modifier = Modifier.fillMaxWidth().height(300.dp)
+                    )
                     Text("Всего за неделю: $total руб", modifier = Modifier.padding(16.dp))
                 }
-                else -> {  // День — placeholder
-                    Text("Расходы за день: $total руб", modifier = Modifier.padding(16.dp))
-                }
+                else -> Text("Расходы за день: $total руб", modifier = Modifier.padding(16.dp))
             }
         }
     }
 }
-
-fun startOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
-
-fun endOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH)) }.timeInMillis

@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.BarChart  // Добавь для stats
-import androidx.compose.material.icons.filled.History  // Добавь для history
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,10 +38,10 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel = hilt
                     IconButton(onClick = { navController.navigate("add_expense") }) {
                         Icon(Icons.Default.Add, contentDescription = "Добавить расход")
                     }
-                    IconButton(onClick = { navController.navigate("stats") }) {  // Добавь
+                    IconButton(onClick = { navController.navigate("stats") }) {
                         Icon(Icons.Default.BarChart, contentDescription = "Статистика")
                     }
-                    IconButton(onClick = { navController.navigate("history") }) {  // Добавь
+                    IconButton(onClick = { navController.navigate("history") }) {
                         Icon(Icons.Default.History, contentDescription = "История")
                     }
                     IconButton(onClick = { navController.navigate("settings") }) {
@@ -58,7 +58,65 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel = hilt
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // ... твои карточки "Сегодня", "Неделя", "Месяц" без изменений ...
+            // Карточка "День"
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Schedule, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("День", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                        }
+                        Text("${todayTotal} руб", fontSize = 24.sp, fontWeight = FontWeight.Bold)  // Фикс: string interpolation
+                    }
+                }
+            }
+
+            // Карточка "Неделя"
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.ArrowDownward, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Неделя", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                        }
+                        Text("${weekTotal} руб", fontSize = 24.sp, fontWeight = FontWeight.Bold)  // Фикс: string interpolation
+                    }
+                }
+            }
+
+            // Карточка "Месяц"
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Wallet, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Месяц", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                        }
+                        Text("${monthTotal} руб", fontSize = 24.sp, fontWeight = FontWeight.Bold)  // Фикс: string interpolation
+                    }
+                }
+            }
 
             // Прогресс к цели
             item {
@@ -66,23 +124,25 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel = hilt
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Лимит на месяц", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text("0.00 руб", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Лимит на месяц", fontSize = 16.sp, fontWeight = FontWeight.Medium)
                         LinearProgressIndicator(
-                            progress = (progress / 100f).coerceIn(0f, 1f),  // Безопасный Float
+                            progress = { (progress / 100f).toFloat() },
                             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                         )
                     }
                 }
             }
 
-            // Кнопка "Установить лимит" (убрал, по запросу)
+            // Кнопка "Установить лимит"
+            item {
+                Button(
+                    onClick = { navController.navigate("settings") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Установить лимит на месяц")
+                }
+            }
         }
     }
 }
