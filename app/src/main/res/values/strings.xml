@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TrekerDengi</string>
+    <string name="widget_description">Показывает сегодняшние расходы и прогресс к цели</string>
+    <!-- Добавь остальные строки твоего приложения ниже -->
 </resources>
