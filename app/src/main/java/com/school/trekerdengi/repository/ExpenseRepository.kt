@@ -18,6 +18,10 @@ class ExpenseRepository @Inject constructor(private val dao: ExpenseDao) {
 
     fun getExpensesByCategory(start: Long, end: Long): Flow<List<CategorySum>> = dao.getExpensesByCategory(start, end)
 
+    suspend fun deleteExpense(expense: Expense) {
+        dao.deleteExpense(expense)
+    }
+
     fun getTotalByPeriod(start: Long, end: Long): Flow<Double?> = dao.getTotalByPeriod(start, end)
 
     suspend fun getDailySumsForWeek(start: Long): List<Pair<Long, Double>> {

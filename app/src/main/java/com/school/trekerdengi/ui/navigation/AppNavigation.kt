@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.school.trekerdengi.ui.screens.AddExpenseScreen
-import com.school.trekerdengi.ui.screens.HistoryScreen  // Добавь import
+import com.school.trekerdengi.ui.screens.HistoryScreen
 import com.school.trekerdengi.ui.screens.MainScreen
 import com.school.trekerdengi.ui.screens.SettingsScreen
 import com.school.trekerdengi.ui.screens.StatsScreen
@@ -15,9 +15,9 @@ import com.school.trekerdengi.ui.screens.StatsScreen
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = "main") {
         composable("main") { MainScreen(navController) }
-        composable("add_expense") { AddExpenseScreen(navController) }
-        composable("settings") { SettingsScreen(navController) }
+        composable("add_expense") { AddExpenseScreen(navController) }  // Добавь
+        composable("settings") { SettingsScreen(navController) }  // Добавь
         composable("stats") { StatsScreen(navController) }
-        composable("history") { HistoryScreen(navController) }  // Новый маршрут для истории
+        composable("history") { HistoryScreen(navController) }
     }
 }

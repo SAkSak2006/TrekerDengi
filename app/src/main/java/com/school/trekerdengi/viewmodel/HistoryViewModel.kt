@@ -24,7 +24,7 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun exportToCSV(expenses: List<Expense>, context: Context) {
+    fun exportToCSV(expenses: List<Expense>, context: Context) {  // Context передаётся из composable
         viewModelScope.launch {
             val csvFile = File(context.getExternalFilesDir(null), "expenses.csv")
             FileWriter(csvFile).use { writer ->
@@ -33,7 +33,7 @@ class HistoryViewModel @Inject constructor(
                     writer.append("${expense.date},${expense.amount},${expense.category},${expense.description}\n")
                 }
             }
-            // Snackbar "Экспортировано в ${csvFile.absolutePath}"
+            // Snackbar показывается в composable
         }
     }
 }
