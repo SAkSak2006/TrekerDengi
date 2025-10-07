@@ -70,46 +70,28 @@ fun HistoryScreen(navController: NavHostController, viewModel: HistoryViewModel 
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(expenses) { _, expense ->
-                DismissibleCard(expense = expense, onDelete = { viewModel.deleteExpense(expense) })
+                HistoryItem(expense = expense, onDelete = { viewModel.deleteExpense(expense) })
             }
         }
     }
 }
 
-// Swipe to delete card
+// Simple card with delete button
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DismissibleCard(expense: Expense, onDelete: () -> Unit) {
-    val dismissState = rememberDismissState(
-        confirmValueChange = { value ->  // Фикс: DismissValue, not Direction
-            if (value == DismissValue.DismissedToEnd) {  // Фикс: DismissValue.DismissedToEnd
-                onDelete()
-                true
-            } else {
-                false
-            }
-        }
-    )
-
-    Dismissible(
-        state = dismissState,
-        directions = setOf(DismissDirection.EndToStart),  // Фикс: import DismissDirection
-        background = {
-            Box(  // Фикс: @Composable lambda
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.error),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Icon(Icons.Default.Delete, contentDescription = "Удалить", tint = MaterialTheme.colorScheme.onError)
-            }
-        }
-    ) {
-        Card(modifier = Modifier.fillMaxWidth()) {  // Фикс: dismissContent as implicit it { }
-            Column(modifier = Modifier.padding(16.dp)) {
+fun HistoryItem(expense: Expense, onDelete: () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         "${expense.amount} руб",
@@ -121,6 +103,9 @@ fun DismissibleCard(expense: Expense, onDelete: () -> Unit) {
                 }
                 Text(expense.category)
                 Text(expense.description)
+            }
+            IconButton(onClick = { onDelete() }) {
+                Icon(Icons.Default.Delete, contentDescription = "Удалить")
             }
         }
     }

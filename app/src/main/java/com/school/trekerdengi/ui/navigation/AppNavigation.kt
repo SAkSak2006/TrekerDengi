@@ -15,8 +15,8 @@ import com.school.trekerdengi.ui.screens.StatsScreen
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = "main") {
         composable("main") { MainScreen(navController) }
-        composable("add_expense") { AddExpenseScreen(navController) }  // Добавь
-        composable("settings") { SettingsScreen(navController) }  // Добавь
+        composable("add_expense") { AddExpenseScreen(navController) }
+        composable("settings") { SettingsScreen(navController) }
         composable("stats") { StatsScreen(navController) }
         composable("history") { HistoryScreen(navController) }
     }
