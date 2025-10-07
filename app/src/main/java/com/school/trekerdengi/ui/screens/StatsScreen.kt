@@ -14,11 +14,22 @@ import androidx.navigation.NavHostController
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.school.trekerdengi.data.entity.Expense
 import com.school.trekerdengi.viewmodel.StatsViewModel
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Calendar  // Добавь import
+
+// Функции для дат
+fun startOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+
+fun endOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH)) }.timeInMillis
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,13 +45,13 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
 
     LaunchedEffect(selectedTab) {
         viewModel.loadStats(tabs[selectedTab].lowercase())
-        // Загрузи список трат по периоду (добавь метод в Repository)
+        val now = System.currentTimeMillis()
         val (start, end) = when (selectedTab) {
-            0 -> System.currentTimeMillis() - 86400000 to System.currentTimeMillis()  // День
-            1 -> System.currentTimeMillis() - 7 * 86400000 to System.currentTimeMillis()  // Неделя
-            else -> startOfMonth to endOfMonth  // Месяц
+            0 -> now - 86400000 to now
+            1 -> now - 7 * 86400000 to now
+            else -> startOfMonth(now) to endOfMonth(now)  // Теперь resolved
         }
-        // repository.getExpensesByPeriod(start, end).collectLatest { expenses = it }
+        // Добавь: viewModel.repository.getExpensesByPeriod(start, end).collectLatest { expenses = it }
     }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Статистика") }) }) { padding ->
@@ -59,9 +70,9 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
                 2 -> {  // Месяц — PieChart
                     if (pieEntries.isNotEmpty()) {
                         AndroidView(factory = { PieChart(it).apply {
-                            data = PieData(pieEntries.map { PieEntry(it.value, it.label) }).apply {
-                                setDrawValues(false)
-                            }
+                            val dataSet = PieDataSet(pieEntries, "Категории")
+                            dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
+                            data = PieData(dataSet)  // Фикс: PieData(dataSet)
                             description.isEnabled = false
                             legend.isEnabled = true
                             setUsePercentValues(true)
@@ -79,7 +90,9 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
                 1 -> {  // Неделя — LineChart
                     if (lineEntries.isNotEmpty()) {
                         AndroidView(factory = { LineChart(it).apply {
-                            data = LineData(lineEntries.map { Entry(it.x, it.y) })
+                            val dataSet = LineDataSet(lineEntries, "Тренд")
+                            dataSet.color = ColorTemplate.COLORFUL_COLORS[0]
+                            data = LineData(dataSet)  // Фикс: LineData(dataSet)
                             xAxis.position = XAxis.XAxisPosition.BOTTOM
                             description.isEnabled = false
                             invalidate()
@@ -97,7 +110,6 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
                 }
             }
 
-            // Кнопки экспорт/импорт
             Button(onClick = { /* exportToCSV() */ }) { Text("Экспорт CSV") }
             Button(onClick = { /* importCSV() */ }) { Text("Импорт CSV") }
         }

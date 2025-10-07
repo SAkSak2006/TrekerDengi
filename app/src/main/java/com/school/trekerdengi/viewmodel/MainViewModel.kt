@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Calendar  // Добавь import
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,25 +42,28 @@ class MainViewModel @Inject constructor(
             val endToday = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59); set(Calendar.SECOND, 59); set(Calendar.MILLISECOND, 999)
             }.timeInMillis
-            repository.getTotalByPeriod(startToday, endToday).collectLatest { _todayTotal.value = it ?: 0.0 }
+            repository.getTotalByPeriod(startToday, endToday).collectLatest { total ->
+                _todayTotal.value = total ?: 0.0  // Фикс: total вместо it
+            }
 
             // Неделя
             val startWeek = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -7) }.apply {
                 set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
             }.timeInMillis
-            repository.getTotalByPeriod(startWeek, System.currentTimeMillis()).collectLatest { _weekTotal.value = it ?: 0.0 }
+            repository.getTotalByPeriod(startWeek, System.currentTimeMillis()).collectLatest { total ->
+                _weekTotal.value = total ?: 0.0  // Фикс: total
+            }
 
             // Месяц
             val startMonth = Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 1) }.apply {
                 set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
             }.timeInMillis
-            repository.getTotalByPeriod(startMonth, System.currentTimeMillis()).collectLatest {
-                _monthTotal.value = it ?: 0.0
+            repository.getTotalByPeriod(startMonth, System.currentTimeMillis()).collectLatest { total ->
+                _monthTotal.value = total ?: 0.0  // Фикс: total
             }
 
-            // Прогресс (цель - расходы)
-            // Добавь GoalRepository позже
-            _progress.value = 0f  // Placeholder
+            // Прогресс (placeholder)
+            _progress.value = 0f
         }
     }
 }

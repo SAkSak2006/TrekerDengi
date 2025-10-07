@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.school.trekerdengi"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.school.trekerdengi"
@@ -60,6 +60,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
+    implementation(libs.androidx.ui.text)
     val composeBom = platform("androidx.compose:compose-bom:2023.10.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)
@@ -70,6 +71,7 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-text:1.5.4")  // Для KeyboardType
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
     // Room

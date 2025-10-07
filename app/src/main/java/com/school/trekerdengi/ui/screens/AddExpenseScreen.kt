@@ -13,9 +13,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType  // Импорт в начале
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage  // Импорт в начале
 import com.school.trekerdengi.viewmodel.AddExpenseViewModel
 import java.util.*
 
@@ -33,17 +35,14 @@ fun AddExpenseScreen(navController: NavHostController, viewModel: AddExpenseView
 
     val datePicker = remember {
         DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            selectedDate = Calendar.getInstance().apply {
-                set(year, month, day)
-            }.timeInMillis
+            selectedDate = Calendar.getInstance().apply { set(year, month, day) }.timeInMillis
         }
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
-        // Сохрани bitmap в file, set photoUri
-        // Placeholder: photoUri = Uri.fromFile(File(context.filesDir, "photo.jpg"))
+        // Placeholder: save bitmap to file, set photoUri
     }
 
     Scaffold(
@@ -70,7 +69,9 @@ fun AddExpenseScreen(navController: NavHostController, viewModel: AddExpenseView
                 onValueChange = { amount = it },
                 label = { Text("Сумма") },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.foundation.text.KeyboardType.Number)
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = KeyboardType.Number  // Теперь resolved
+                )
             )
 
             OutlinedTextField(
@@ -107,7 +108,7 @@ fun AddExpenseScreen(navController: NavHostController, viewModel: AddExpenseView
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Дата: ${selectedDate}")  // Форматируй
+                Text("Дата: ${Date(selectedDate)}")
                 Button(onClick = {
                     val cal = Calendar.getInstance().apply { timeInMillis = selectedDate }
                     DatePickerDialog(context, datePicker, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
@@ -121,7 +122,13 @@ fun AddExpenseScreen(navController: NavHostController, viewModel: AddExpenseView
                 Text("Фото чека")
             }
 
-            photoUri?.let { AsyncImage(model = it, contentDescription = "Фото") }
+            photoUri?.let { uri ->
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Фото чека",
+                    modifier = Modifier.size(100.dp)
+                )
+            }
 
             Button(
                 onClick = {
