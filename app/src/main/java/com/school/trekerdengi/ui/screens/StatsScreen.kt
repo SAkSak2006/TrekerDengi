@@ -1,8 +1,8 @@
 package com.school.trekerdengi.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,23 +21,15 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.school.trekerdengi.data.entity.Expense
 import com.school.trekerdengi.viewmodel.StatsViewModel
 import kotlinx.coroutines.flow.collectLatest
-import java.util.Calendar  // Добавь import
-
-// Функции для дат
-fun startOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
-
-fun endOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH)) }.timeInMillis
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hiltViewModel()) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("День", "Неделя", "Месяц")
-    val context = LocalContext.current
-    var expenses by remember { mutableStateOf(emptyList<Expense>()) }
     val total by viewModel.total.collectAsState()
     val categorySums by viewModel.categorySums.collectAsState()
     val pieEntries by viewModel.pieEntries.collectAsState()
@@ -45,16 +37,20 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
 
     LaunchedEffect(selectedTab) {
         viewModel.loadStats(tabs[selectedTab].lowercase())
-        val now = System.currentTimeMillis()
-        val (start, end) = when (selectedTab) {
-            0 -> now - 86400000 to now
-            1 -> now - 7 * 86400000 to now
-            else -> startOfMonth(now) to endOfMonth(now)  // Теперь resolved
-        }
-        // Добавь: viewModel.repository.getExpensesByPeriod(start, end).collectLatest { expenses = it }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Статистика") }) }) { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Статистика") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                    }
+                }
+            )
+        }
+    ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             TabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
@@ -67,51 +63,41 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
             }
 
             when (selectedTab) {
-                2 -> {  // Месяц — PieChart
+                2 -> {  // Месяц — PieChart (по скрину: 100% для категории)
                     if (pieEntries.isNotEmpty()) {
                         AndroidView(factory = { PieChart(it).apply {
                             val dataSet = PieDataSet(pieEntries, "Категории")
                             dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
-                            data = PieData(dataSet)  // Фикс: PieData(dataSet)
+                            data = PieData(dataSet)
                             description.isEnabled = false
                             legend.isEnabled = true
                             setUsePercentValues(true)
                             invalidate()
                         } }, modifier = Modifier.fillMaxWidth().height(300.dp))
                     }
-                    LazyColumn {
-                        items(categorySums) { sum ->
-                            Card(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                                Text("${sum.category}: ${sum.total} руб", modifier = Modifier.padding(16.dp))
-                            }
-                        }
-                    }
+                    Text("Всего: $total руб", modifier = Modifier.padding(16.dp))
                 }
-                1 -> {  // Неделя — LineChart
+                1 -> {  // Неделя — LineChart (по скрину: тренд по дням)
                     if (lineEntries.isNotEmpty()) {
                         AndroidView(factory = { LineChart(it).apply {
-                            val dataSet = LineDataSet(lineEntries, "Тренд")
+                            val dataSet = LineDataSet(lineEntries, "Тренд расходов")
                             dataSet.color = ColorTemplate.COLORFUL_COLORS[0]
-                            data = LineData(dataSet)  // Фикс: LineData(dataSet)
+                            data = LineData(dataSet)
                             xAxis.position = XAxis.XAxisPosition.BOTTOM
                             description.isEnabled = false
                             invalidate()
                         } }, modifier = Modifier.fillMaxWidth().height(300.dp))
                     }
+                    Text("Всего за неделю: $total руб", modifier = Modifier.padding(16.dp))
                 }
-                else -> {  // День — список
-                    LazyColumn {
-                        items(expenses) { expense ->
-                            Card(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                                Text("${expense.amount} руб - ${expense.description}", modifier = Modifier.padding(16.dp))
-                            }
-                        }
-                    }
+                else -> {  // День — placeholder
+                    Text("Расходы за день: $total руб", modifier = Modifier.padding(16.dp))
                 }
             }
-
-            Button(onClick = { /* exportToCSV() */ }) { Text("Экспорт CSV") }
-            Button(onClick = { /* importCSV() */ }) { Text("Импорт CSV") }
         }
     }
 }
+
+fun startOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+
+fun endOfMonth(now: Long): Long = Calendar.getInstance().apply { timeInMillis = now; set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH)) }.timeInMillis
