@@ -11,14 +11,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+// Импорты для цветов/типографии
+import androidx.compose.material3.Typography  // Добавь, если нет
+
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = Purple80,  // Теперь resolved из Color.kt
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Purple40,  // Теперь resolved
     secondary = PurpleGrey40,
     tertiary = Pink40
 )
@@ -26,7 +29,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun TrekerDengiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available below Android 12 (API level 31)
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -35,7 +37,6 @@ fun TrekerDengiTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -50,7 +51,7 @@ fun TrekerDengiTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = Typography,  // Теперь resolved из Type.kt
         content = content
     )
 }

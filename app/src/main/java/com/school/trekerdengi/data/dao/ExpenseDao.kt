@@ -19,4 +19,4 @@ interface ExpenseDao {
     fun getTotalByPeriod(start: Long, end: Long): Flow<Double?>
 }
 
-data class CategorySum(val category: String, val total: Double)
+data class CategorySum(val category: String, val total: Double)  // Добавь в конец файла

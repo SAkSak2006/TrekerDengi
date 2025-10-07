@@ -3,9 +3,9 @@ package com.school.trekerdengi.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.school.trekerdengi.ui.screens.AddExpenseScreen  // Добавь
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.school.trekerdengi.ui.screens.AddExpenseScreen  // Добавь import
 import com.school.trekerdengi.ui.screens.MainScreen
 
 @Composable
